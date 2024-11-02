@@ -195,5 +195,82 @@ with tab1:
         st.write(f"Rata-rata konsentrasi PM2.5 untuk seluruh kota pada tahun {selected_year_bulanan}  bulan {selected_month_bulanan} adalah {rata_rata_pm25:.2f} µg/m³, termasuk dalam kategori {kategori_pm25}.")
         st.write(f"Rata-rata konsentrasi PM10 untuk seluruh kota pada tahun {selected_year_bulanan}  bulan {selected_month_bulanan} adalah {rata_rata_pm10:.2f} µg/m³, termasuk dalam kategori {kategori_pm10}.")
 
+# Analisa Per Tahun 
+with tab2:
+    with st.form(key='_form_tahunan'):
+        selected_year_tahunan = st.number_input("Pilih Tahun", min_value=2013, max_value=2017, step=1)
+        submit_button_tahunan = st.form_submit_button(label='Analisa Tahunan')
+
+    if submit_button_tahunan:
+        st.header(f"Konsentrasi PM2.5 dan PM10 Tahunan di Semua Kota pada Tahun {selected_year_tahunan}")
+
+        all_cities_data = []
+        for city, df in dataframes.items():
+            annual_data = partikulasi_polusi_tahunan(df, selected_year_tahunan)
+            annual_data['location'] = city
+            all_cities_data.append(annual_data)
+
+        all_cities_data = pd.concat(all_cities_data, ignore_index=True)
+
+        # Creating the plot
+        fig = make_subplots(rows=1, cols=1)
+
+        # Define color mapping
+        warna_kategori = {
+            "Baik": 'green',
+            "Sedang": 'blue',
+            "Tidak Sehat": 'orange',
+            "Sangat Tidak Sehat": 'red',
+            "Berbahaya": 'black'
+        }
+
+        # Plotting PM2.5
+        fig.add_trace(
+            go.Bar(
+                x=all_cities_data['location'],
+                y=all_cities_data['avg_PM25'],
+                name='PM2.5',
+                marker_color=[warna_kategori[kategori_pm25(pm)] for pm in all_cities_data['avg_PM25']],
+                width=0.4,
+                offsetgroup=0
+            )
+        )
+
+        # Plotting PM10
+        fig.add_trace(
+            go.Bar(
+                x=all_cities_data['location'],
+                y=all_cities_data['avg_PM10'],
+                name='PM10',
+                marker_color=[warna_kategori[kategori_pm10(pm)] for pm in all_cities_data['avg_PM10']],
+                width=0.4,
+                offsetgroup=1
+            )
+        )
+
+        # Update layout
+        fig.update_layout(
+            height=500,
+            title_text=f"Konsentrasi PM2.5 dan PM10 Tahunan di Semua Kota pada Tahun {selected_year_tahunan}",
+            barmode='group',
+            xaxis_title="Kota",
+            yaxis_title="Konsentrasi (µg/m³)",
+            yaxis=dict(range=[0, 420])
+        )
+
+        # Display chart
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Display average analysis
+        rata_rata_pm25 = all_cities_data['avg_PM25'].mean()
+        rata_rata_pm10 = all_cities_data['avg_PM10'].mean()
+        kategori_pm25_tahunan = kategori_pm25(rata_rata_pm25)
+        kategori_pm10_tahunan = kategori_pm10(rata_rata_pm10)
+
+        st.write(f"Rata-rata konsentrasi PM2.5 untuk seluruh kota pada tahun {selected_year_tahunan} adalah {rata_rata_pm25:.2f} µg/m³, termasuk dalam kategori {kategori_pm25_tahunan}. PM2.5 adalah partikel udara halus yang dapat masuk jauh ke dalam paru-paru dan menyebabkan berbagai masalah kesehatan. Paparan tinggi terhadap PM2.5 dalam jangka panjang dapat meningkatkan risiko penyakit jantung, paru-paru, dan berbagai gangguan pernapasan.")
+        st.write(f"Rata-rata konsentrasi PM10 untuk seluruh kota pada tahun {selected_year_tahunan} adalah {rata_rata_pm10:.2f} µg/m³, termasuk dalam kategori {kategori_pm10_tahunan}. PM10 adalah partikel udara yang lebih besar dari PM2.5, namun masih cukup kecil untuk terhirup dan dapat menyebabkan iritasi pada saluran pernapasan atas. Pengendalian PM10 penting untuk mengurangi dampak langsung polusi udara terhadap kesehatan.")
+
+        st.write("Dari tahun ke tahun, kualitas udara di kota-kota dengan tingkat polusi tertinggi serta untuk masing-masing kota telah mengalami variasi. Tahun-tahun tertentu menunjukkan kualitas udara yang tidak sehat dan sangat tidak sehat, sedangkan tahun lainnya menunjukkan kualitas udara yang sedang dan baik. Hal ini menunjukkan pentingnya pengawasan dan pengendalian polusi udara untuk meningkatkan kualitas hidup masyarakat.")
+
 
 
