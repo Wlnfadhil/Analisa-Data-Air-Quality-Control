@@ -15,11 +15,11 @@ st.write(_KETERANGAN)
 
 # Metrics
 col1, col2, col3, col4, col5 = st.columns(5)
-col1.metric("BAIK", "0-50 μg/m³", "👨")
-col2.metric("SEDANG", "51 - 150 μg/m³", "😐")
-col3.metric("TIDAK SEHAT", "151 - 350 μg/m³", "🤒")
-col4.metric("SANGAT TIDAK SEHAT", "351-420 μg/m³", "🚨")
-col5.metric("BERBAHAYA", "<420 μg/m³", "💀")
+col1.image("submission/img/icon/pm10/pm10-baik.webp", caption="BAIK: 0-50 μg/m³")
+col2.image("submission/img/icon/pm10/pm10-sedang.webp", caption="SEDANG: 51-150 μg/m³")
+col3.image("submission/img/icon/pm10/pm10-tidaksehat.webp", caption="TIDAK SEHAT: 151-350 μg/m³")
+col4.image("submission/img/icon/pm10/pm10-sangattidaksehat.webp", caption="SANGAT TIDAK SEHAT: 351-420 μg/m³")
+col5.image("submission/img/icon/pm10/pm10-berbahaya.webp", caption="BERBAHAYA: >420 μg/m³")
 
 # Function to load data
 def load_data():
