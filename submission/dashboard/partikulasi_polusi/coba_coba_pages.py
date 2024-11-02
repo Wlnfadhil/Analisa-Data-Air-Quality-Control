@@ -49,54 +49,58 @@ def kategori_pm10(value):
         return "Berbahaya"
 
 # Fungsi untuk menghitung polusi mingguan (PM10 saja)
-def partikulasi_polusi_mingguan(df, year, month):
-    filtered_df = df.query('year == @year and month == @month')
-    
-    # Menghitung kolom 'week' berdasarkan tahun, bulan, dan hari
-    filtered_df['week'] = pd.to_datetime(filtered_df[['year', 'month', 'day']]).dt.isocalendar().week
-    
-    result = filtered_df.groupby(['year', 'month', 'week']).agg(avg_PM10=('PM10', 'mean')).reset_index()
+def partikulasi_polusi_tahunan(df, year):
+    filtered_df = df.query('year == @year')
+
+    result = (
+        filtered_df.groupby(['year'])
+        .agg(avg_PM25=('PM2.5', 'mean'), avg_PM10=('PM10', 'mean'))
+        .reset_index()
+    )
+
+    result['avg_PM25'] = result['avg_PM25'].round()
     result['avg_PM10'] = result['avg_PM10'].round()
+
     return result
+
 
 # Tabs untuk analisis per periode waktu
 tab1, tab2, tab3 = st.tabs(["Mingguan", "Bulanan", "Tahunan"])
 
 with tab1:
-    with st.form(key='_form_mingguan'):
-        selected_city_mingguan = st.selectbox("Pilih Kota", list(dataframes.keys()))
-        selected_year_mingguan = st.number_input("Tahun", min_value=2013, max_value=2017, value=2013)
+    with st.form(key='_form_tahunan'):
+        st.header("Analisis Partikulasi Polusi Tahunan")
 
-        if selected_year_mingguan == 2013:
-            selected_month_mingguan = st.number_input("Bulan", min_value=3, max_value=12, value=3)
-        elif selected_year_mingguan == 2017:
-            selected_month_mingguan = st.number_input("Bulan", min_value=1, max_value=2, value=1)
-        else:
-            selected_month_mingguan = st.number_input("Bulan", min_value=1, max_value=12, value=1)
+        kota_list = list(dataframes.keys())
+        selected_kota = st.selectbox("Pilih Kota", kota_list)
 
-        if st.form_submit_button("Analisis Mingguan"):
-            df = dataframes[selected_city_mingguan]
-            df['day'] = df['day'].astype(int)
+        if st.form_submit_button("Analisis Tahunan"):
+            df = dataframes[selected_kota]
+            hasil_kualitas_udara = pd.DataFrame()
+            for tahun in range(2013, 2018):
+                hasil_kualitas_udara_tahun = partikulasi_polusi_tahunan(df, tahun)
+                hasil_kualitas_udara = pd.concat([hasil_kualitas_udara, hasil_kualitas_udara_tahun])
 
-            hasil_kualitas_udara = partikulasi_polusi_mingguan(df, selected_year_mingguan, selected_month_mingguan)
+            # Menambahkan kolom kategori berdasarkan PM10
+            hasil_kualitas_udara['kategori'] = hasil_kualitas_udara['avg_PM10'].apply(kategori_pm10)
 
-
-            # Visualisasi hasil dengan bar chart (PM10 saja) menggunakan warna untuk identifikasi
-            fig = px.bar(
-                hasil_kualitas_udara, x='week', y='avg_PM10', color='avg_PM10',
-                color_discrete_map={
-                    "Baik": "green", 
-                    "Sedang": "blue", 
-                    "Tidak Sehat": "orange", 
-                    "Sangat Tidak Sehat": "red", 
-                    "Berbahaya": "black"
-                },
-                title=f"Kualitas Udara Mingguan di {selected_city_mingguan} pada {selected_month_mingguan}/{selected_year_mingguan}",
-                labels={'avg_PM10': 'Kadar PM10 (μg/m³)', 'week': 'Minggu'}
-            )
+            # Visualisasi hasil tahunan
+            fig = px.bar(hasil_kualitas_udara, x='year', y=['avg_PM25', 'avg_PM10'],
+                         title=f"Kualitas Udara di {selected_kota} dari 2013 hingga 2017",
+                         labels={'value': 'Kadar Polutan (μg/m³)', 'year': 'Tahun'},
+                         color='kategori',  # Menggunakan kategori untuk pewarnaan
+                         color_discrete_map={
+                             "Baik": 'green',
+                             "Sedang": 'blue',
+                             "Tidak Sehat": 'orange',
+                             "Sangat Tidak Sehat": 'red',
+                             "Berbahaya": 'black'
+                         })  # Menggunakan peta warna yang ditentukan
+            fig.update_yaxes(range=[0, 420])
+            fig.update_xaxes(tickvals=[2013, 2014, 2015, 2016, 2017])
             st.plotly_chart(fig)
 
-            # Keterangan untuk tiap minggu
-            for index, row in hasil_kualitas_udara.iterrows():
-                kategori = kategori_pm10(row['avg_PM10'])
-                st.write(f"Minggu ke-{int(row['week'])}: Kadar PM10 rata-rata adalah {row['avg_PM10']} μg/m³ ({kategori}).")
+            # Menulis keterangan menggunakan magic write tentang keadaan polusi
+            st.write("Dari tahun 2013 hingga 2017, kualitas udara di {} telah mengalami variasi. Tahun-tahun tertentu menunjukkan kualitas udara yang tidak sehat dan sangat tidak sehat, sedangkan tahun lainnya menunjukkan kualitas udara yang sedang dan baik. Hal ini menunjukkan pentingnya pengawasan dan pengendalian polusi udara untuk meningkatkan kualitas hidup masyarakat.".format(selected_kota))
+
+
