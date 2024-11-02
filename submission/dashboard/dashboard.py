@@ -1,4 +1,4 @@
-from submission.dashboard.partikulasi_polusi.partikulasi_polusi import load_data, page_partilukalasi_polusi_harian, page_partilukalasi_polusi_mingguan, page_partilukalasi_polusi_bulanan, page_partilukalasi_polusi_tahunan
+from submission.dashboard.partikulasi_polusi.Korelasi_partikulasi_polusi_semua_kota import load_data, page_partilukalasi_polusi_harian, page_partilukalasi_polusi_mingguan, page_partilukalasi_polusi_bulanan, page_partilukalasi_polusi_tahunan
 import streamlit as st
 
 # Load data
