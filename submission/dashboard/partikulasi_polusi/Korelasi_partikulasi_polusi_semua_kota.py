@@ -136,25 +136,26 @@ with tab1:
 
         all_cities_data = pd.concat(all_cities_data, ignore_index=True)
         
-        # Membuat subplots dengan 1 baris dan 2 kolom
+        # Membuat subplots dengan 1 baris dan 1 kolom untuk mengakomodasi 5 bar chart
         fig = make_subplots(rows=1, cols=1)
 
-        # Tambahkan konfigurasi warna kategori
-        warna_kategori = {
-            "Baik": 'green',
-            "Sedang": 'blue',
-            "Tidak Sehat": 'orange',
-            "Sangat Tidak Sehat": 'red',
-            "Berbahaya": 'black'
+        # Menetapkan warna khusus untuk setiap kategori
+        warna_khusus = {
+            'PM2.5': 'red',      # Warna untuk PM2.5
+            'PM10': 'green',     # Warna untuk PM10
+            'SO2': 'blue',       # Warna untuk SO2
+            'CO': 'orange',      # Warna untuk CO
+            'NO2': 'purple',     # Warna untuk NO2
+            'O3': 'cyan'         # Warna untuk O3
         }
 
-        # Grafik bar chart untuk PM2.5 dan PM10 dalam satu frame
+        # Grafik bar chart untuk PM2.5, PM10, SO2, CO, NO2, dan O3 dalam satu frame
         fig.add_trace(
             go.Bar(
                 x=all_cities_data['location'],
                 y=all_cities_data['avg_PM25'],
                 name='PM2.5',
-                marker_color=[warna_kategori[kategori] for kategori in all_cities_data['kategori_pm25_bulanan']],
+                marker_color=warna_khusus['PM2.5'],  # Gunakan warna khusus untuk PM2.5
                 width=0.4,  # Lebar bar PM2.5
                 offsetgroup=0,  # Offset untuk PM2.5
                 hoverinfo='y+name'  # Menampilkan informasi saat dihover
@@ -166,9 +167,57 @@ with tab1:
                 x=all_cities_data['location'],
                 y=all_cities_data['avg_PM10'],
                 name='PM10',
-                marker_color=[warna_kategori[kategori] for kategori in all_cities_data['kategori_pm10_bulanan']],
+                marker_color=warna_khusus['PM10'],  # Gunakan warna khusus untuk PM10
                 width=0.4,  # Lebar bar PM10
                 offsetgroup=1,  # Offset untuk PM10
+                hoverinfo='y+name'  # Menampilkan informasi saat dihover
+            )
+        )
+
+        fig.add_trace(
+            go.Bar(
+                x=all_cities_data['location'],
+                y=all_cities_data['avg_SO2'],
+                name='SO2',
+                marker_color=warna_khusus['SO2'],  # Gunakan warna khusus untuk SO2
+                width=0.4,  # Lebar bar SO2
+                offsetgroup=2,  # Offset untuk SO2
+                hoverinfo='y+name'  # Menampilkan informasi saat dihover
+            )
+        )
+
+        fig.add_trace(
+            go.Bar(
+                x=all_cities_data['location'],
+                y=all_cities_data['avg_CO'],
+                name='CO',
+                marker_color=warna_khusus['CO'],  # Gunakan warna khusus untuk CO
+                width=0.4,  # Lebar bar CO
+                offsetgroup=3,  # Offset untuk CO
+                hoverinfo='y+name'  # Menampilkan informasi saat dihover
+            )
+        )
+
+        fig.add_trace(
+            go.Bar(
+                x=all_cities_data['location'],
+                y=all_cities_data['avg_NO2'],
+                name='NO2',
+                marker_color=warna_khusus['NO2'],  # Gunakan warna khusus untuk NO2
+                width=0.4,  # Lebar bar NO2
+                offsetgroup=4,  # Offset untuk NO2
+                hoverinfo='y+name'  # Menampilkan informasi saat dihover
+            )
+        )
+
+        fig.add_trace(
+            go.Bar(
+                x=all_cities_data['location'],
+                y=all_cities_data['avg_O3'],
+                name='O3',
+                marker_color=warna_khusus['O3'],  # Gunakan warna khusus untuk O3
+                width=0.4,  # Lebar bar O3
+                offsetgroup=5,  # Offset untuk O3
                 hoverinfo='y+name'  # Menampilkan informasi saat dihover
             )
         )
@@ -176,7 +225,7 @@ with tab1:
         # Update layout untuk mempercantik plot
         fig.update_layout(
             height=500,
-            title_text=f"Konsentrasi PM2.5 dan PM10 Bulanan di Semua Kota pada Tahun {selected_year_bulanan} dan Bulan {selected_month_bulanan}",
+            title_text=f"Konsentrasi PM2.5, PM10, SO2, CO, NO2, dan O3 Bulanan di Semua Kota pada Tahun {selected_year_bulanan} dan Bulan {selected_month_bulanan}",
             barmode='group',  # Mengatur mode bar menjadi 'group' untuk menampilkan berdampingan
             xaxis_title="Kota",
             yaxis_title="Konsentrasi (µg/m³)",

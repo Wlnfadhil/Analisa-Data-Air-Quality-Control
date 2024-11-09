@@ -180,22 +180,26 @@ with tab1:
         # Membuat subplots dengan 1 baris dan 2 kolom
         fig = make_subplots(rows=1, cols=1)
 
-        # Tambahkan konfigurasi warna kategori
-        warna_kategori = {
-            "Baik": 'green',
-            "Sedang": 'blue',
-            "Tidak Sehat": 'orange',
-            "Sangat Tidak Sehat": 'red',
-            "Berbahaya": 'black'
+        # Menetapkan warna khusus untuk setiap kategori
+        warna_khusus = {
+            'PM2.5': 'red',      # Warna untuk PM2.5
+            'PM10': 'green',     # Warna untuk PM10
+            'SO2': 'blue',       # Warna untuk SO2
+            'CO': 'orange',      # Warna untuk CO
+            'NO2': 'purple',     # Warna untuk NO2
+            'O3': 'cyan'         # Warna untuk O3
         }
 
-        # Grafik bar chart untuk PM2.5 dan PM10 dalam satu frame
+        # Menetapkan warna default
+        default_color = 'gray'  # Anda bisa memilih warna default yang diinginkan
+
+        # Grafik bar chart untuk PM2.5, PM10, SO2, CO, NO2, dan O3 dalam satu frame
         fig.add_trace(
             go.Bar(
                 x=all_cities_data['location'],
                 y=all_cities_data['avg_PM25'],
                 name='PM2.5',
-                marker_color=[warna_kategori[kategori] for kategori in all_cities_data['kategori_pm25_bulanan']],
+                marker_color=warna_khusus['PM2.5'],  # Gunakan warna khusus untuk PM2.5
                 width=0.4,  # Lebar bar PM2.5
                 offsetgroup=0,  # Offset untuk PM2.5
                 hoverinfo='y+name'  # Menampilkan informasi saat dihover
@@ -207,9 +211,57 @@ with tab1:
                 x=all_cities_data['location'],
                 y=all_cities_data['avg_PM10'],
                 name='PM10',
-                marker_color=[warna_kategori[kategori] for kategori in all_cities_data['kategori_pm10_bulanan']],
+                marker_color=warna_khusus['PM10'],  # Gunakan warna khusus untuk PM10
                 width=0.4,  # Lebar bar PM10
                 offsetgroup=1,  # Offset untuk PM10
+                hoverinfo='y+name'  # Menampilkan informasi saat dihover
+            )
+        )
+
+        fig.add_trace(
+            go.Bar(
+                x=all_cities_data['location'],
+                y=all_cities_data['avg_SO2'],
+                name='SO2',
+                marker_color=warna_khusus['SO2'],  # Gunakan warna khusus untuk SO2
+                width=0.4,  # Lebar bar SO2
+                offsetgroup=2,  # Offset untuk SO2
+                hoverinfo='y+name'  # Menampilkan informasi saat dihover
+            )
+        )
+
+        fig.add_trace(
+            go.Bar(
+                x=all_cities_data['location'],
+                y=all_cities_data['avg_CO'],
+                name='CO',
+                marker_color=warna_khusus['CO'],  # Gunakan warna khusus untuk CO
+                width=0.4,  # Lebar bar CO
+                offsetgroup=3,  # Offset untuk CO
+                hoverinfo='y+name'  # Menampilkan informasi saat dihover
+            )
+        )
+
+        fig.add_trace(
+            go.Bar(
+                x=all_cities_data['location'],
+                y=all_cities_data['avg_NO2'],
+                name='NO2',
+                marker_color=warna_khusus['NO2'],  # Gunakan warna khusus untuk NO2
+                width=0.4,  # Lebar bar NO2
+                offsetgroup=4,  # Offset untuk NO2
+                hoverinfo='y+name'  # Menampilkan informasi saat dihover
+            )
+        )
+
+        fig.add_trace(
+            go.Bar(
+                x=all_cities_data['location'],
+                y=all_cities_data['avg_O3'],
+                name='O3',
+                marker_color=warna_khusus.get('O3', default_color),  # Gunakan warna khusus untuk O3 atau warna default
+                width=0.4,  # Lebar bar O3
+                offsetgroup=5,  # Offset untuk O3
                 hoverinfo='y+name'  # Menampilkan informasi saat dihover
             )
         )
@@ -233,8 +285,41 @@ with tab1:
         kategori_pm25 = kategori_pm25(rata_rata_pm25)
         kategori_pm10 = kategori_pm10(rata_rata_pm10)
 
-        st.write(f"Rata-rata konsentrasi PM2.5 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_pm25:.2f} µg/m³, termasuk dalam kategori {kategori_pm25}.")
-        st.write(f"Rata-rata konsentrasi PM10 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_pm10:.2f} µg/m³, termasuk dalam kategori {kategori_pm10}.")
+        # Inisialisasi keterangan dengan nilai default
+        keterangan_pm25 = "Keterangan tidak tersedia."
+        keterangan_pm10 = "Keterangan tidak tersedia."
+        # ... inisialisasi untuk SO2, CO, NO2, O3 jika diperlukan ...
+
+        # Logika untuk menentukan keterangan PM2.5
+        if kategori_pm25 == "BAIK":
+            keterangan_pm25 = f"Rata-rata konsentrasi PM2.5 untuk seluruh kota adalah {rata_rata_pm25:.2f} µg/m³, yang termasuk dalam kategori {kategori_pm25}. Kualitas udara sangat baik dan tidak berbahaya bagi kesehatan."
+        elif kategori_pm25 == "SEDANG":
+            keterangan_pm25 = f"Rata-rata konsentrasi PM2.5 untuk seluruh kota adalah {rata_rata_pm25:.2f} µg/m³, yang termasuk dalam kategori {kategori_pm25}. Kualitas udara masih aman, namun perlu diawasi untuk mencegah peningkatan polusi."
+        elif kategori_pm25 == "TIDAK SEHAT":
+            keterangan_pm25 = f"Rata-rata konsentrasi PM2.5 untuk seluruh kota adalah {rata_rata_pm25:.2f} µg/m³, yang termasuk dalam kategori {kategori_pm25}. Kualitas udara tidak sehat dan perlu pengurangan aktivitas yang menyebabkan polusi."
+        elif kategori_pm25 == "BERBAHAYA":
+            keterangan_pm25 = f"Rata-rata konsentrasi PM2.5 untuk seluruh kota adalah {rata_rata_pm25:.2f} µg/m³, yang termasuk dalam kategori {kategori_pm25}. Udara berbahaya dan tindakan pencegahan perlu dilakukan segera."
+        elif kategori_pm25 == "SANGAT BERBAHAYA":
+            keterangan_pm25 = f"Rata-rata konsentrasi PM2.5 untuk seluruh kota adalah {rata_rata_pm25:.2f} µg/m³, yang termasuk dalam kategori {kategori_pm25}. Situasi sangat berbahaya dan tindakan darurat diperlukan."
+
+        # Pastikan untuk melakukan hal yang sama untuk kategori lainnya
+        # Misalnya untuk PM10, SO2, CO, NO2, O3
+
+        # Tampilkan keterangan
+        st.write(keterangan_pm25)
+
+        if kategori_pm10 == "BAIK":
+            keterangan_pm10 = f"Rata-rata konsentrasi PM10 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_pm10:.2f} µg/m³, yang termasuk dalam kategori {kategori_pm10}. Kualitas udara sangat baik dan tidak berbahaya bagi kesehatan."
+        elif kategori_pm10 == "SEDANG":
+            keterangan_pm10 = f"Rata-rata konsentrasi PM10 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_pm10:.2f} µg/m³, yang termasuk dalam kategori {kategori_pm10}. Kualitas udara masih aman, namun perlu diawasi untuk mencegah peningkatan polusi."
+        elif kategori_pm10 == "TIDAK SEHAT":
+            keterangan_pm10 = f"Rata-rata konsentrasi PM10 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_pm10:.2f} µg/m³, yang termasuk dalam kategori {kategori_pm10}. Kualitas udara tidak sehat dan perlu pengurangan aktivitas yang menyebabkan polusi."
+        elif kategori_pm10 == "BERBAHAYA":
+            keterangan_pm10 = f"Rata-rata konsentrasi PM10 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_pm10:.2f} µg/m³, yang termasuk dalam kategori {kategori_pm10}. Udara berbahaya dan tindakan pencegahan perlu dilakukan segera."
+        elif kategori_pm10 == "SANGAT BERBAHAYA":
+            keterangan_pm10 = f"Rata-rata konsentrasi PM10 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_pm10:.2f} µg/m³, yang termasuk dalam kategori {kategori_pm10}. Situasi sangat berbahaya dan tindakan darurat diperlukan."
+
+        st.write(keterangan_pm10)
 
         # Analisis untuk SO2, NO2, CO, O3
         rata_rata_so2 = all_cities_data['avg_SO2'].mean()
@@ -242,7 +327,56 @@ with tab1:
         rata_rata_co = all_cities_data['avg_CO'].mean()
         rata_rata_o3 = all_cities_data['avg_O3'].mean()
 
-        st.write(f"Rata-rata konsentrasi SO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_so2:.2f} µg/m³.")
-        st.write(f"Rata-rata konsentrasi NO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_no2:.2f} µg/m³.")
-        st.write(f"Rata-rata konsentrasi CO untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_co:.2f} µg/m³.")
-        st.write(f"Rata-rata konsentrasi O3 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_o3:.2f} µg/m³.")
+        kategori_so2 = kategori_so2(rata_rata_so2)
+        kategori_no2 = kategori_no2(rata_rata_no2)
+        kategori_co = kategori_co(rata_rata_co)
+        kategori_o3 = kategori_o3(rata_rata_o3)
+
+        if kategori_so2 == "BAIK":
+            keterangan_so2 = f"Rata-rata konsentrasi SO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_so2:.2f} µg/m³, yang termasuk dalam kategori {kategori_so2}. Kualitas udara sangat baik dan tidak berbahaya bagi kesehatan."
+        elif kategori_so2 == "SEDANG":
+            keterangan_so2 = f"Rata-rata konsentrasi SO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_so2:.2f} µg/m³, yang termasuk dalam kategori {kategori_so2}. Kualitas udara masih aman, namun perlu diawasi untuk mencegah peningkatan polusi."
+        elif kategori_so2 == "TIDAK SEHAT":
+            keterangan_so2 = f"Rata-rata konsentrasi SO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_so2:.2f} µg/m³, yang termasuk dalam kategori {kategori_so2}. Kualitas udara tidak sehat dan perlu pengurangan aktivitas yang menyebabkan polusi."
+        elif kategori_so2 == "BERBAHAYA":
+            keterangan_so2 = f"Rata-rata konsentrasi SO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_so2:.2f} µg/m³, yang termasuk dalam kategori {kategori_so2}. Udara berbahaya dan tindakan pencegahan perlu dilakukan segera."
+        elif kategori_so2 == "SANGAT BERBAHAYA":
+            keterangan_so2 = f"Rata-rata konsentrasi SO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_so2:.2f} µg/m³, yang termasuk dalam kategori {kategori_so2}. Situasi sangat berbahaya dan tindakan darurat diperlukan."
+
+        if kategori_no2 == "BAIK":
+            keterangan_no2 = f"Rata-rata konsentrasi NO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_no2:.2f} µg/m³, yang termasuk dalam kategori {kategori_no2}. Kualitas udara sangat baik dan tidak berbahaya bagi kesehatan."
+        elif kategori_no2 == "SEDANG":
+            keterangan_no2 = f"Rata-rata konsentrasi NO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_no2:.2f} µg/m³, yang termasuk dalam kategori {kategori_no2}. Kualitas udara masih aman, namun perlu diawasi untuk mencegah peningkatan polusi."
+        elif kategori_no2 == "TIDAK SEHAT":
+            keterangan_no2 = f"Rata-rata konsentrasi NO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_no2:.2f} µg/m³, yang termasuk dalam kategori {kategori_no2}. Kualitas udara tidak sehat dan perlu pengurangan aktivitas yang menyebabkan polusi."
+        elif kategori_no2 == "BERBAHAYA":
+            keterangan_no2 = f"Rata-rata konsentrasi NO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_no2:.2f} µg/m³, yang termasuk dalam kategori {kategori_no2}. Udara berbahaya dan tindakan pencegahan perlu dilakukan segera."
+        elif kategori_no2 == "SANGAT BERBAHAYA":
+            keterangan_no2 = f"Rata-rata konsentrasi NO2 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_no2:.2f} µg/m³, yang termasuk dalam kategori {kategori_no2}. Situasi sangat berbahaya dan tindakan darurat diperlukan."
+
+        if kategori_co == "BAIK":
+            keterangan_co = f"Rata-rata konsentrasi CO untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_co:.2f} µg/m³, yang termasuk dalam kategori {kategori_co}. Kualitas udara sangat baik dan tidak berbahaya bagi kesehatan."
+        elif kategori_co == "SEDANG":
+            keterangan_co = f"Rata-rata konsentrasi CO untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_co:.2f} µg/m³, yang termasuk dalam kategori {kategori_co}. Kualitas udara masih aman, namun perlu diawasi untuk mencegah peningkatan polusi."
+        elif kategori_co == "TIDAK SEHAT":
+            keterangan_co = f"Rata-rata konsentrasi CO untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_co:.2f} µg/m³, yang termasuk dalam kategori {kategori_co}. Kualitas udara tidak sehat dan perlu pengurangan aktivitas yang menyebabkan polusi."
+        elif kategori_co == "BERBAHAYA":
+            keterangan_co = f"Rata-rata konsentrasi CO untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_co:.2f} µg/m³, yang termasuk dalam kategori {kategori_co}. Udara berbahaya dan tindakan pencegahan perlu dilakukan segera."
+        elif kategori_co == "SANGAT BERBAHAYA":
+            keterangan_co = f"Rata-rata konsentrasi CO untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_co:.2f} µg/m³, yang termasuk dalam kategori {kategori_co}. Situasi sangat berbahaya dan tindakan darurat diperlukan."
+
+        if kategori_o3 == "BAIK":
+            keterangan_o3 = f"Rata-rata konsentrasi O3 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_o3:.2f} µg/m³, yang termasuk dalam kategori {kategori_o3}. Kualitas udara sangat baik dan tidak berbahaya bagi kesehatan."
+        elif kategori_o3 == "SEDANG":
+            keterangan_o3 = f"Rata-rata konsentrasi O3 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_o3:.2f} µg/m³, yang termasuk dalam kategori {kategori_o3}. Kualitas udara masih aman, namun perlu diawasi untuk mencegah peningkatan polusi."
+        elif kategori_o3 == "TIDAK SEHAT":
+            keterangan_o3 = f"Rata-rata konsentrasi O3 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_o3:.2f} µg/m³, yang termasuk dalam kategori {kategori_o3}. Kualitas udara tidak sehat dan perlu pengurangan aktivitas yang menyebabkan polusi."
+        elif kategori_o3 == "BERBAHAYA":
+            keterangan_o3 = f"Rata-rata konsentrasi O3 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_o3:.2f} µg/m³, yang termasuk dalam kategori {kategori_o3}. Udara berbahaya dan tindakan pencegahan perlu dilakukan segera."
+        elif kategori_o3 == "SANGAT BERBAHAYA":
+            keterangan_o3 = f"Rata-rata konsentrasi O3 untuk seluruh kota pada tahun {selected_year_bulanan} bulan {selected_month_bulanan} adalah {rata_rata_o3:.2f} µg/m³, yang termasuk dalam kategori {kategori_o3}. Situasi sangat berbahaya dan tindakan darurat diperlukan."
+
+        st.write(keterangan_so2)
+        st.write(keterangan_no2)
+        st.write(keterangan_co)
+        st.write(keterangan_o3)

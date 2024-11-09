@@ -48,7 +48,7 @@ def load_data():
     dataframes = {}
     for csv_file in csv_files:
         file_path = os.path.join(current_dir, "submission/data", csv_file)
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path, encoding='utf-8')
         location = csv_file.split('_')[2]
         dataframes[location] = df
     return dataframes
