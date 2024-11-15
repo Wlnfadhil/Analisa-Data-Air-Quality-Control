@@ -174,53 +174,6 @@ with tab1:
             )
         )
 
-        fig.add_trace(
-            go.Bar(
-                x=all_cities_data['location'],
-                y=all_cities_data['avg_SO2'],
-                name='SO2',
-                marker_color=warna_khusus['SO2'],  # Gunakan warna khusus untuk SO2
-                width=0.4,  # Lebar bar SO2
-                offsetgroup=2,  # Offset untuk SO2
-                hoverinfo='y+name'  # Menampilkan informasi saat dihover
-            )
-        )
-
-        fig.add_trace(
-            go.Bar(
-                x=all_cities_data['location'],
-                y=all_cities_data['avg_CO'],
-                name='CO',
-                marker_color=warna_khusus['CO'],  # Gunakan warna khusus untuk CO
-                width=0.4,  # Lebar bar CO
-                offsetgroup=3,  # Offset untuk CO
-                hoverinfo='y+name'  # Menampilkan informasi saat dihover
-            )
-        )
-
-        fig.add_trace(
-            go.Bar(
-                x=all_cities_data['location'],
-                y=all_cities_data['avg_NO2'],
-                name='NO2',
-                marker_color=warna_khusus['NO2'],  # Gunakan warna khusus untuk NO2
-                width=0.4,  # Lebar bar NO2
-                offsetgroup=4,  # Offset untuk NO2
-                hoverinfo='y+name'  # Menampilkan informasi saat dihover
-            )
-        )
-
-        fig.add_trace(
-            go.Bar(
-                x=all_cities_data['location'],
-                y=all_cities_data['avg_O3'],
-                name='O3',
-                marker_color=warna_khusus['O3'],  # Gunakan warna khusus untuk O3
-                width=0.4,  # Lebar bar O3
-                offsetgroup=5,  # Offset untuk O3
-                hoverinfo='y+name'  # Menampilkan informasi saat dihover
-            )
-        )
 
         # Update layout untuk mempercantik plot
         fig.update_layout(
