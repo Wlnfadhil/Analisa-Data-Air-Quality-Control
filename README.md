@@ -36,7 +36,7 @@ Proyek ini merupakan dashboard interaktif yang dikembangkan menggunakan Streamli
 4. Buka aplikasi di browser: Aplikasi akan terbuka secara otomatis di http://localhost:8501/ atau alamat port yang ditampilkan di terminal.
 
 ## Akses Aplikasi Online
-Aplikasi ini dapat diakses secara online melalui tautan berikut: [Dashboard Analisis Kualitas Udara dan Partikulasi Polusi](https://iehhbd9ktqxnzqn4gz75cq.streamlit.app/)
+Aplikasi ini dapat diakses secara online melalui tautan berikut: [Dashboard Analisis Kualitas Udara dan Partikulasi Polusi](https://brwnl49nw6tupgn6j3pqlb.streamlit.app/)
 
 ## Dependensi Utama
 - streamlit
